@@ -1,36 +1,38 @@
 var foods = jsonObject.foods;
 var resultFood = [];
+var resultFoodsDesc = [];
 var delayTimer = 0;
+var selectList = document.createElement("select");
 
-function searchFood(searchQuery) {
-    clearTimeout(delayTimer);
-    delayTimer = setTimeout(function() {;
-        resultFoodSetDesc.clear();
-        while (selectList.hasChildNodes())
-            selectList.removeChild(selectList.lastChild);
+function createList() {
+    var myDiv = document.getElementById("foodResults");
+    selectList.id = "mySelect";
+    myDiv.appendChild(selectList);
+}
 
-        k = 0
-        for (food in foods) {
-            var longDescription = foods[food].long_desc;
-            if (longDescription.toLowerCase().includes(searchQuery.toLowerCase())) {
-                resultFoodSetDesc.add(foods[food].long_desc);
-                k++;
-            }
-            if (k > 20) {
-                break;
-            }
-        }
+function cleanList() {
+    while (selectList.hasChildNodes())
+        selectList.removeChild(selectList.lastChild);
+}
 
-        let resultFoodArrayDescLike = resultFoodSetDesc.values();
-        let resultFoodArrayDesc = Array.from(resultFoodArrayDescLike);
+function populateChoices(choicesArray) {
+    cleanList();
+    for (var choice in choicesArray) {
+        var option = document.createElement("option");
+        option.value = choicesArray[choice];
+        option.text = choicesArray[choice];
+        selectList.appendChild(option);
+        console.log(option);
+    }
+}
 
-        for (food in resultFoodArrayDesc) {
-            var option = document.createElement("option");
-            option.value = resultFoodArrayDesc[food].long_desc;
-            option.text = resultFoodArrayDesc[food].long_desc;
-            selectList.appendChild(option);
-        }
-    }, 500)
+function fetchFoodDesc(foodsArray) {
+    fetchedDesc = [];
+    for (var food in foodsArray) {
+        var longDescription = foods[food].long_desc;
+        fetchedDesc.push(longDescription);
+    }
+    return fetchedDesc;
 }
 
 function dedupArray(inputArray) {
@@ -40,11 +42,24 @@ function dedupArray(inputArray) {
     return deduped;
 }
 
-function populateChoices() {
-    var myDiv = document.getElementById("foodResults");
-    var selectList = document.createElement("select");
-    selectList.id = "mySelect";
-    myDiv.appendChild(selectList);
-    searchFood("");
+function searchFood(searchQuery) {
+    clearTimeout(delayTimer);
+    delayTimer = setTimeout(function() {
+        var filteredFood = [];
+        var k = 0;
+        for (var food in resultFoodsDesc) {
+            if (k > 20) {
+                break;
+            }
+            if (resultFoodsDesc[food].toLowerCase().includes(searchQuery.toLowerCase())) {
+                filteredFood.push(resultFoodsDesc[food]);
+                k++;
+            }
+        }
+        populateChoices(filteredFood);
+    }, 100);
 }
-document.forms[0].elements.convertFrom.value;
+
+createList();
+resultFoodsDesc = fetchFoodDesc(foods);
+resultFoodsDesc = dedupArray(resultFoodsDesc);
