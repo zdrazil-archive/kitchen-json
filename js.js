@@ -2,27 +2,21 @@ var foods = jsonObject.foods;
 var resultFood = [];
 var resultFoodsDesc = [];
 var delayTimer = 0;
-var selectList = document.createElement("select");
 
-function createList() {
-    var myDiv = document.getElementById("foodResults");
-    selectList.id = "mySelect";
-    myDiv.appendChild(selectList);
-}
-
-function cleanList() {
+function cleanList(selectList) {
     while (selectList.hasChildNodes())
         selectList.removeChild(selectList.lastChild);
 }
 
 function populateChoices(choicesArray) {
-    cleanList();
+    var selectList = document.getElementById('foodList');
+    cleanList(selectList);
     for (var choice in choicesArray) {
-        var option = document.createElement("option");
-        option.value = choicesArray[choice];
-        option.text = choicesArray[choice];
-        selectList.appendChild(option);
-        console.log(option);
+        var a = document.createElement('a');
+        var entry = document.createElement('li');
+        a.textContent = choicesArray[choice];
+        entry.appendChild(a);
+        selectList.appendChild(entry);
     }
 }
 
@@ -60,6 +54,5 @@ function searchFood(searchQuery) {
     }, 100);
 }
 
-createList();
 resultFoodsDesc = fetchFoodDesc(foods);
 resultFoodsDesc = dedupArray(resultFoodsDesc);
