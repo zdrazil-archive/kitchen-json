@@ -4,11 +4,12 @@ var resultFoodsDesc = [];
 var delayTimer = 0;
 
 function cleanList(selectList) {
-    while (selectList.hasChildNodes())
+    while (selectList.hasChildNodes()) {
         selectList.removeChild(selectList.lastChild);
+    }
 }
 
-function populateChoices(choicesArray) {
+function populateFoodChoices(choicesArray) {
     var selectList = document.getElementById('foodList');
     cleanList(selectList);
     for (var choice in choicesArray) {
@@ -17,6 +18,45 @@ function populateChoices(choicesArray) {
         a.textContent = choicesArray[choice];
         entry.appendChild(a);
         selectList.appendChild(entry);
+    }
+}
+
+function populateFromChoices(chosenFoodDesc) {
+    var fromChoicesDict = getJsonForFoodDict(chosenFoodDesc);
+    var selectList = document.getElementById('convertFromList');
+    cleanList(selectList);
+    for (var choice in fromChoicesDict) {
+        option = document.createElement("option");
+        option.textContent = choice;
+        option.value = fromChoicesDict[choice];
+        selectList.add(option);
+    }
+}
+
+function getJsonForFoodDict(foodDescription) {
+    var fromChoicesDict = {};
+    var foodFound = false;
+    for (var food in foods) {
+        var longDescription = foods[food].long_desc;
+        if (foodFound) {
+            break;
+        } else if (foodDescription === longDescription) {
+            var key = foods[food].msre_desc;
+            var keyValue = foods[food].gm_wgt;
+            fromChoicesDict[key] = keyValue;
+        }
+    }
+    return fromChoicesDict;
+}
+
+function populateToChoices() {
+    var selectList = document.getElementById('convertToList');
+    cleanList(convertToList);
+    for (var conversion in conversions) {
+        option = document.createElement("option");
+        option.textContent = conversion;
+        option.value = conversions[conversion];
+        selectList.add(option);
     }
 }
 
@@ -42,7 +82,7 @@ function searchFood(searchQuery) {
         var filteredFood = [];
         var k = 0;
         for (var food in resultFoodsDesc) {
-            if (k > 20) {
+            if (k > 30) {
                 break;
             }
             if (resultFoodsDesc[food].toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -50,9 +90,56 @@ function searchFood(searchQuery) {
                 k++;
             }
         }
-        populateChoices(filteredFood);
+        populateFoodChoices(filteredFood);
+
+        var ul = document.getElementById('foodList');
+        ul.onclick = function(event) {
+            var target = getEventTarget(event);
+            var selectedFoodDesc = target.innerHTML;
+            populateFromChoices(selectedFoodDesc);
+            populateToChoices();
+        };
     }, 100);
 }
 
 resultFoodsDesc = fetchFoodDesc(foods);
 resultFoodsDesc = dedupArray(resultFoodsDesc);
+
+// Conversion
+
+var conversions = {
+    "kilograms": 0.001,
+    "miligrams": 1000,
+    "grams": 1,
+    "ounce": 0.035274,
+    "pounds": 0.0022046
+};
+
+function getConversionResult(valueFrom, valueTo, conversionUnit) {
+    return valueFrom * valueTo * conversionUnit;
+    // if (switchedValues) {
+    //     return (valueFrom / valueTo) / conversionUnitValue;
+    // } else {
+    //     return valueFrom * valueTo * conversionUnit;
+    // }
+}
+
+function getEventTarget(event) {
+    event = event || window.event;
+    return event.target || event.srcElement;
+}
+
+function calculateClick() {
+    var conversionUnit = document.getElementById("convertFromList").value;
+    var valueFrom = document.getElementById('convertFromValue').value;
+    var valueTo = document.getElementById("convertToList").value;
+
+    if (valueFrom === null) {
+        window.alert("Please enter both ");
+    } else {
+        var result = document.getElementById('result');
+        result.textContent = getConversionResult(valueFrom,
+            valueTo,
+            conversionUnit);
+    }
+}

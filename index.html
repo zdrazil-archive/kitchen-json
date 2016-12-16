@@ -42,17 +42,25 @@
             </div>
         </div>
         <div class="row">
-            <div class="one-half column" style="margin-top: 25%">
+            <div class="" style="margin-top: 25%">
                 <form>
                     Food Search:<br>
-                    <input type="text" name="foodSearch" oninput=searchFood(document.forms[0].elements.foodSearch.value)><br>
-                    <div id="foodResults">
-                    </div>
+                    <input type="text" name="foodSearch" oninput=searchFood(document.forms[0].elements.foodSearch.value)><br> Food Results:<br>
+                    <ul id="foodList">
+                        <li>Butter</li>
+                    </ul>
+
                     Convert from:<br>
-                    <input type="text" name="convertFrom"> Convert to:<br>
-                    <input type="text" name="convertTo">
-                    <input type="button" onclick="alert('The result is 42')" value="Calculate">
-                    <input type="reset">
+                    <select id="convertFromList">
+                    </select><br> How much?
+                    <input type="number" name="convertFromValue" id="convertFromValue" min='0' max=Number.MAX_SAFE_INTEGER> <br>Convert to:<br>
+                    <select id="convertToList">
+                    </select>
+                    <div id="result">
+                    </div>
+                    <input type="button" onclick=(calculateClick()) value="Calculate">
+                    <input type="reset"><br>
+
                 </form>
             </div>
         </div>
