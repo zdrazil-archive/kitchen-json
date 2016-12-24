@@ -2,6 +2,7 @@ var foods = jsonObject.foods;
 var resultFood = [];
 var resultFoodsDesc = [];
 var delayTimer = 0;
+var selectedElement = "empty";
 
 function cleanList(selectList) {
     while (selectList.hasChildNodes()) {
@@ -98,6 +99,23 @@ function searchFood(searchQuery) {
             var selectedFoodDesc = target.innerHTML;
             populateFromChoices(selectedFoodDesc);
             populateToChoices();
+
+            if (selectedElement !== "empty") {
+                if (selectedElement.tagName === 'A') {
+                    selectedElement.parentElement.removeAttribute("id", "selected-food");
+                } else if (selectedElement.tagName === 'LI') {
+                    selectedElement.removeAttribute("id", "selected-food");
+                }
+            }
+
+            selectedElement = target;
+            if (target.tagName === 'A') {
+               target.parentElement.setAttribute("id", "selected-food"); 
+            } else if (target.tagName === 'LI') {
+                target.setAttribute("id", "selected-food");
+            }
+
+            // scrollToSettings();
         };
     }, 100);
 }
@@ -138,8 +156,25 @@ function calculateClick() {
         window.alert("Please enter both ");
     } else {
         var result = document.getElementById('result');
-        result.textContent = getConversionResult(valueFrom,
+        var resultValue = getConversionResult(valueFrom,
             valueTo,
             conversionUnit);
+        var preText = "It weights";
+        var selectElement = document.getElementById("convertToList");
+
+        var ConvertToText = selectElement.options[selectElement.selectedIndex].text;
+        result.textContent = preText + ' ' + resultValue + ' ' + ConvertToText + '.';
+        // result.textContent = getConversionResult(valueFrom,
+        //     valueTo,
+        //     conversionUnit);
     }
 }
+
+// Scroll to settings
+function scrollToSettings() {
+    document.getElementById("convertFromList").scrollIntoView({
+        behavior: 'smooth'
+    });
+}
+
+

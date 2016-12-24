@@ -1,0 +1,32 @@
+#foodList {
+    max-height: 300px;
+    overflow: auto;
+}
+
+#foodList {
+    min-height: 30px;
+}
+
+#foodList a {
+    color: black;
+    display: block;
+}
+
+#foodList li:hover {
+    background-color: #f0f0f0;
+}
+
+#foodList {
+    cursor: pointer;
+}
+
+#selected-food a,
+#selected-food li {
+    background-color: #D6D6D6;
+}
+
+#result {
+
+}
+
+
