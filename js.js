@@ -1,15 +1,21 @@
 var foods = jsonObject.foods;
-var resultFood = [];
-var resultFoodsDesc = [];
-var delayTimer = 0;
+var filteredFood = [];
 var selectedElement = "empty";
+var searchString = "";
+var timerSpinner;
+var timer;
 
+
+// Food to convert list
+
+// Remove all entries
 function cleanList(selectList) {
     while (selectList.hasChildNodes()) {
         selectList.removeChild(selectList.lastChild);
     }
 }
 
+// Insert foods to convert entries from array
 function populateFoodChoices(choicesArray) {
     var selectList = document.getElementById('foodList');
     cleanList(selectList);
@@ -22,6 +28,7 @@ function populateFoodChoices(choicesArray) {
     }
 }
 
+// Insert convert from units as options to a list 
 function populateFromChoices(chosenFoodDesc) {
     var fromChoicesDict = getJsonForFoodDict(chosenFoodDesc);
     var selectList = document.getElementById('convertFromList');
@@ -34,6 +41,8 @@ function populateFromChoices(chosenFoodDesc) {
     }
 }
 
+// Get units of a given food description from JSON and return as a dictionary
+// For usage in function populateFromChoices
 function getJsonForFoodDict(foodDescription) {
     var fromChoicesDict = {};
     var foodFound = false;
@@ -50,6 +59,7 @@ function getJsonForFoodDict(foodDescription) {
     return fromChoicesDict;
 }
 
+// Insert units from conversion array
 function populateToChoices() {
     var selectList = document.getElementById('convertToList');
     cleanList(convertToList);
@@ -61,6 +71,7 @@ function populateToChoices() {
     }
 }
 
+// Get food descrtipns from foods array, that was imported from JSON file
 function fetchFoodDesc(foodsArray) {
     fetchedDesc = [];
     for (var food in foodsArray) {
@@ -70,6 +81,7 @@ function fetchFoodDesc(foodsArray) {
     return fetchedDesc;
 }
 
+// Remove duplicates from an array
 function dedupArray(inputArray) {
     var deduped = inputArray.filter(function(el, i, arr) {
         return arr.indexOf(el) === i;
@@ -78,53 +90,105 @@ function dedupArray(inputArray) {
 }
 
 function searchFood(searchQuery) {
-    clearTimeout(delayTimer);
-    delayTimer = setTimeout(function() {
-        var filteredFood = [];
-        var k = 0;
-        for (var food in resultFoodsDesc) {
-            if (k > 30) {
-                break;
-            }
-            if (resultFoodsDesc[food].toLowerCase().includes(searchQuery.toLowerCase())) {
-                filteredFood.push(resultFoodsDesc[food]);
-                k++;
-            }
+
+    clearTimeout(timerSpinner);
+    timerSpinner = setTimeout(function() {
+            if (document.getElementsByClassName('spinner').length === 0) {
+                spinningWheelShow();
         }
+    }, 300);
+
+
+    // Add delay for better resposiveness
+    clearTimeout(timer);
+    timer = setTimeout(function() {
+        spinningWheelShow();
+        // Fuse.js search
+        var options = {
+          shouldSort: true,
+          tokenize: true,
+          matchAllTokens: true,
+          findAllMatches: true,
+          threshold: 0.3,
+          location: 0,
+          distance: 100,
+          maxPatternLength: 32,
+          minMatchCharLength: 3,
+          keys: []
+        };
+
+        var searchableList;
+
+        if (searchString.length === 0 || searchQuery.length === 0) {
+            searchableList = foodsDesc;
+        } else if (searchQuery.length < searchString.length) {
+            filteredFood = [];
+            searchableList = foodsDesc;
+        } else if (searchQuery.length > searchString.length) {
+            searchableList = filteredFood;
+        } else {
+            searchableList = foodsDesc;
+        }
+
+        searchString = searchQuery;
+        
+        var fuse = new Fuse(searchableList, options); // "list" is the item array
+        var foodSearchResult = fuse.search(searchQuery);
+
+        for (var food in foodSearchResult) {
+            filteredFood.push(foodsDesc[foodSearchResult[food]]);
+        }
+        
+        // Insert results to a foods to convert list and hide spinner
+        spinningWheelStop();
         populateFoodChoices(filteredFood);
 
-        var ul = document.getElementById('foodList');
-        ul.onclick = function(event) {
-            var target = getEventTarget(event);
-            var selectedFoodDesc = target.innerHTML;
-            populateFromChoices(selectedFoodDesc);
-            populateToChoices();
-
-            if (selectedElement !== "empty") {
-                if (selectedElement.tagName === 'A') {
-                    selectedElement.parentElement.removeAttribute("id", "selected-food");
-                } else if (selectedElement.tagName === 'LI') {
-                    selectedElement.removeAttribute("id", "selected-food");
-                }
-            }
-
-            selectedElement = target;
-            if (target.tagName === 'A') {
-               target.parentElement.setAttribute("id", "selected-food"); 
-            } else if (target.tagName === 'LI') {
-                target.setAttribute("id", "selected-food");
-            }
-
-            // scrollToSettings();
-        };
-    }, 100);
+    }, 500);
+        
+       
 }
 
-resultFoodsDesc = fetchFoodDesc(foods);
-resultFoodsDesc = dedupArray(resultFoodsDesc);
+// Action when clicking on an item in a foods to convert list
+function foodToConvertSelected() {
+     // Action when clicking on an item:
+    var ul = document.getElementById('foodList');
+    ul.onclick = function(event) {
+        // Get the element and its text
+        var target = getEventTarget(event);
+        var selectedFoodDesc = target.innerHTML;
+
+        // populate convert from list
+        populateFromChoices(selectedFoodDesc);
+        // populate conversion to units list
+        populateToChoices();
+
+
+        // remove id of a previously selected li item
+        if (selectedElement !== "empty") {
+            if (selectedElement.tagName === 'A') {
+                selectedElement.parentElement.removeAttribute("id", "selected-food");
+            } else if (selectedElement.tagName === 'LI') {
+                selectedElement.removeAttribute("id", "selected-food");
+            }
+        }
+
+        // add id to a selected li item
+        selectedElement = target;
+        if (target.tagName === 'A') {
+           target.parentElement.setAttribute("id", "selected-food"); 
+        } else if (target.tagName === 'LI') {
+            target.setAttribute("id", "selected-food");
+        }
+    };
+}
+
+foodsDesc = fetchFoodDesc(foods);
+foodsDesc = dedupArray(foodsDesc);
+foodToConvertSelected();
 
 // Conversion
 
+// Conversion to units and their values
 var conversions = {
     "kilograms": 0.001,
     "miligrams": 1000,
@@ -133,21 +197,20 @@ var conversions = {
     "pounds": 0.0022046
 };
 
+// Get results of conversion
 function getConversionResult(valueFrom, valueTo, conversionUnit) {
     return valueFrom * valueTo * conversionUnit;
-    // if (switchedValues) {
-    //     return (valueFrom / valueTo) / conversionUnitValue;
-    // } else {
-    //     return valueFrom * valueTo * conversionUnit;
-    // }
 }
 
+// Get element that was clicked
 function getEventTarget(event) {
     event = event || window.event;
     return event.target || event.srcElement;
 }
 
+// Action when calculate button is clicked
 function calculateClick() {
+    // Get values from UI selections
     var conversionUnit = document.getElementById("convertFromList").value;
     var valueFrom = document.getElementById('convertFromValue').value;
     var valueTo = document.getElementById("convertToList").value;
@@ -164,17 +227,39 @@ function calculateClick() {
 
         var ConvertToText = selectElement.options[selectElement.selectedIndex].text;
         result.textContent = preText + ' ' + resultValue + ' ' + ConvertToText + '.';
-        // result.textContent = getConversionResult(valueFrom,
-        //     valueTo,
-        //     conversionUnit);
     }
 }
 
-// Scroll to settings
-function scrollToSettings() {
-    document.getElementById("convertFromList").scrollIntoView({
-        behavior: 'smooth'
-    });
+// Spinning wheel while waiting for the search results
+var spinner;
+function spinningWheelShow() {
+    var opts = {
+        lines: 13,
+        length: 28,
+        width: 14,
+        radius: 42,
+        scale: 0.2,
+        corners: 1,
+        color: '#000',
+        opacity: 0.25,
+        rotate: 0,
+        direction: 1,
+        speed: 1,
+        trail: 60,
+        fps: 20,
+        zIndex: 2,
+        className: 'spinner',
+        left: '50%',
+        top: '60%',
+        shadow: false,
+        hwaccel: false,
+        position: 'absolute'
+    };
+    var target = document.getElementById('foodList');
+    spinner = new Spinner(opts).spin(target);
 }
 
+function spinningWheelStop() {
+    spinner.stop();
+}
 

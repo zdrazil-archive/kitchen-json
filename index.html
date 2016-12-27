@@ -30,7 +30,6 @@
 </head>
 
 <body>
-
     <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <div class="container">
@@ -39,34 +38,35 @@
                 <h4>Kitchen Calculator</h4>
                 <p>The Kitchen Calculator helps you convert U.S. recipes to European measurements. </p>
                 <p>You no longer have to deal with questions like: Does cup of sugar weight the same as a cup of rice? Or: Does this brand have a different weight than the other?</p>
+
             </div>
         </div>
         
         <div class="">
             <form>
                 <div class="row">
-                    <div class="four columns">
-                        <label for="foodToConvert">Food to convert:</label>
-                        <input type="text" name="foodSearch" oninput=searchFood(document.forms[0].elements.foodSearch.value)><br> 
 
+                    <div class="five columns">
+                        <label for="foodToConvert">Search for food to convert:</label>
+                        <input type="text" name="foodSearch" oninput=searchFood(document.forms[0].elements.foodSearch.value) class="u-full-width"><br> 
                         <ul id="foodList" style="list-style-type:none">
                         </ul>
                     </div>
 
-                    <div class="four columns">
+                    <div class="three columns">
                         <label>Convert from:</label>
-                        <select id="convertFromList"></select>
+                        <select id="convertFromList" class="u-full-width"></select>
                         <label>How much?</label>
-                        <input type="number" name="convertFromValue" id="convertFromValue" min='0' max=Number.MAX_SAFE_INTEGER> 
+                        <input type="number" name="convertFromValue" id="convertFromValue" min='0' max=Number.MAX_SAFE_INTEGER class="u-full-width">  
 
                         <label>Convert to:</label>
-                        <select id="convertToList">
+                        <select id="convertToList" class="u-full-width">
                         </select>
                     </div>
 
 
-                    <div class="four columns">
-                        <input type="button" onclick=(calculateClick()) value="Calculate">
+                    <div class="three columns">
+                        <input type="button" class="button-primary u-full-width" onclick=(calculateClick()) value="Calculate">
                         <input type="reset">
 
                          <h2>                    
@@ -88,6 +88,8 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <script type="text/javascript" src="food-info.json"></script>
     <script type="text/javascript" src="js.js"></script>
+    <script type="text/javascript" src="js/fuse.min.js"></script>
+    <script type="text/javascript" src="js/spin.min.js"></script>
 </body>
 
 </html>
