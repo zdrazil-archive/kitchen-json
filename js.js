@@ -1,8 +1,5 @@
 var foods = jsonObject.foods;
-var filteredFood = [];
 var selectedElement = "empty";
-var searchString = "";
-var timerSpinner;
 var timer;
 
 
@@ -90,62 +87,53 @@ function dedupArray(inputArray) {
 }
 
 function searchFood(searchQuery) {
-
-    clearTimeout(timerSpinner);
-    timerSpinner = setTimeout(function() {
-            if (document.getElementsByClassName('spinner').length === 0) {
+    // Show spinning wheel
+    if (document.getElementsByClassName('spinner').length === 0) {
                 spinningWheelShow();
-        }
-    }, 300);
+    }
 
+    // Fuse.js search
+    var options = {
+      shouldSort: true,
+      tokenize: true,
+      matchAllTokens: true,
+      findAllMatches: true,
+      threshold: 0.3,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 3,
+      keys: []
+    };
 
-    // Add delay for better resposiveness
+    var searchableList;
+    searchableList = foodsDesc;
+    
+    var fuse = new Fuse(searchableList, options); // "list" is the item array
+    var foodSearchResult = fuse.search(searchQuery);
+
+    filteredFood = [];
+    for (var food in foodSearchResult) {
+        filteredFood.push(foodsDesc[foodSearchResult[food]]);
+    }
+    
+    // Insert results to a foods to convert list and hide spinner
+    spinningWheelStop();
+    populateFoodChoices(filteredFood);
+       
+}
+
+function delayedSearchFood() {
+    // Show spinning wheel
+    if (document.getElementsByClassName('spinner').length === 0) {
+                spinningWheelShow();
+    }
+
+    // Delay search for better responsiveness
     clearTimeout(timer);
     timer = setTimeout(function() {
-        spinningWheelShow();
-        // Fuse.js search
-        var options = {
-          shouldSort: true,
-          tokenize: true,
-          matchAllTokens: true,
-          findAllMatches: true,
-          threshold: 0.3,
-          location: 0,
-          distance: 100,
-          maxPatternLength: 32,
-          minMatchCharLength: 3,
-          keys: []
-        };
-
-        var searchableList;
-
-        if (searchString.length === 0 || searchQuery.length === 0) {
-            searchableList = foodsDesc;
-        } else if (searchQuery.length < searchString.length) {
-            filteredFood = [];
-            searchableList = foodsDesc;
-        } else if (searchQuery.length > searchString.length) {
-            searchableList = filteredFood;
-        } else {
-            searchableList = foodsDesc;
-        }
-
-        searchString = searchQuery;
-        
-        var fuse = new Fuse(searchableList, options); // "list" is the item array
-        var foodSearchResult = fuse.search(searchQuery);
-
-        for (var food in foodSearchResult) {
-            filteredFood.push(foodsDesc[foodSearchResult[food]]);
-        }
-        
-        // Insert results to a foods to convert list and hide spinner
-        spinningWheelStop();
-        populateFoodChoices(filteredFood);
-
+        searchFood(document.forms[0].elements.foodSearch.value);
     }, 500);
-        
-       
 }
 
 // Action when clicking on an item in a foods to convert list
