@@ -1,10 +1,8 @@
 #foodList {
     max-height: 300px;
-    overflow: auto;
-}
-
-#foodList {
     min-height: 30px;
+    cursor: pointer;
+    overflow: auto;
 }
 
 #foodList a {
@@ -12,19 +10,29 @@
     display: block;
 }
 
+#foodList li {
+    margin-bottom: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
 #foodList li:hover {
     background-color: #f0f0f0;
 }
 
-#foodList {
-    cursor: pointer;
-}
-
-#selected-food a,
-#selected-food li {
+#selected-food {
     background-color: #D6D6D6;
 }
 
-#result {
+// Animate chosen food change
+ .innerAnimate {
+        transition: all 1s;
+        max-height: 300px;
+    }
 
+.innerAnimate.pre-animation {
+        opacity:0;
+        max-height: 0;
 }
+
+

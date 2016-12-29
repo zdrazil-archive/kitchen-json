@@ -43,21 +43,25 @@
         </div>
         
         <div class="">
-            <form>
+            <form action="javascript:void(0);">
                 <div class="row">
 
                     <div class="five columns">
                         <label for="foodToConvert">Search for food to convert:</label>
-                        <input type="text" name="foodSearch" oninput=delayedSearchFood(document.forms[0].elements.foodSearch.value) class="u-full-width"><br> 
+                        <input type="search" name="foodSearch" oninput=delayedSearchFood(document.forms[0].elements.foodSearch.value) class="u-full-width"><br> 
                         <ul id="foodList" style="list-style-type:none">
                         </ul>
                     </div>
 
                     <div class="three columns">
+                        <label>Food you've selected for conversion:</label>
+                        <h5 id='chosenFood'>Not selected</h5>
+
                         <label>Convert from:</label>
                         <select id="convertFromList" class="u-full-width"></select>
+
                         <label>How much?</label>
-                        <input type="number" name="convertFromValue" id="convertFromValue" min='0' max=Number.MAX_SAFE_INTEGER class="u-full-width">  
+                        <input id="convertFromValue" type="number" name="convertFromValue" min='0' max=Number.MAX_SAFE_INTEGER step="any" class="u-full-width" oninput=(calculateClick())>  
 
                         <label>Convert to:</label>
                         <select id="convertToList" class="u-full-width">
@@ -66,8 +70,8 @@
 
 
                     <div class="three columns">
-                        <input type="button" class="button-primary u-full-width" onclick=(calculateClick()) value="Calculate">
-                        <input type="reset">
+                        <input type="submit" class="button-primary u-full-width" onclick=(calculateClick()) value="Calculate">
+                        <input type="reset" onclick=delayedSearchFood("")>
 
                          <h2>                    
                             <div id="result">

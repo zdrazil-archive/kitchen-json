@@ -38,6 +38,11 @@ function populateFromChoices(chosenFoodDesc) {
     }
 }
 
+// Show selected food in Food you've selected for conversion: 
+function populateChosenFood(chosenFoodDesc) {
+    var element = document.getElementById("chosenFood").innerHTML = chosenFoodDesc;
+}
+
 // Get units of a given food description from JSON and return as a dictionary
 // For usage in function populateFromChoices
 function getJsonForFoodDict(foodDescription) {
@@ -143,13 +148,22 @@ function foodToConvertSelected() {
     ul.onclick = function(event) {
         // Get the element and its text
         var target = getEventTarget(event);
-        var selectedFoodDesc = target.innerHTML;
+        var selectedFoodDesc = [];
 
+        // Check what exactly was clicked and correctly parse the name of food
+        if (target.tagName === 'A') {
+           selectedFoodDesc = target.innerHTML; 
+        } else if (target.tagName === 'LI') {
+            selectedFoodDesc = target.firstChild.innerHTML;
+        }
+
+        // Populate Chosen food
+        populateChosenFood(selectedFoodDesc);
         // populate convert from list
         populateFromChoices(selectedFoodDesc);
         // populate conversion to units list
         populateToChoices();
-
+        document.getElementById("convertFromValue").focus();
 
         // remove id of a previously selected li item
         if (selectedElement !== "empty") {
@@ -214,7 +228,7 @@ function calculateClick() {
         var selectElement = document.getElementById("convertToList");
 
         var ConvertToText = selectElement.options[selectElement.selectedIndex].text;
-        result.textContent = preText + ' ' + resultValue + ' ' + ConvertToText + '.';
+        result.textContent = preText + ' ' + resultValue.toLocaleString({ maximumFractionDigits: 1 }) + ' ' + ConvertToText + '.';
     }
 }
 
