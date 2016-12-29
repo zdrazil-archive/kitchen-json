@@ -24,15 +24,3 @@
     background-color: #D6D6D6;
 }
 
-// Animate chosen food change
- .innerAnimate {
-        transition: all 1s;
-        max-height: 300px;
-    }
-
-.innerAnimate.pre-animation {
-        opacity:0;
-        max-height: 0;
-}
-
-

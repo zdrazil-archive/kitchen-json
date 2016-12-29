@@ -96,6 +96,10 @@ function searchFood(searchQuery) {
     if (document.getElementsByClassName('spinner').length === 0) {
                 spinningWheelShow();
     }
+    if (searchQuery === "") {
+        populateChosenFood(searchQuery);
+        document.getElementById('result').textContent = "";
+    }
 
     // Fuse.js search
     var options = {
@@ -161,8 +165,7 @@ function foodToConvertSelected() {
         populateChosenFood(selectedFoodDesc);
         // populate convert from list
         populateFromChoices(selectedFoodDesc);
-        // populate conversion to units list
-        populateToChoices();
+
         document.getElementById("convertFromValue").focus();
 
         // remove id of a previously selected li item
@@ -184,9 +187,14 @@ function foodToConvertSelected() {
     };
 }
 
-foodsDesc = fetchFoodDesc(foods);
-foodsDesc = dedupArray(foodsDesc);
-foodToConvertSelected();
+document.addEventListener("DOMContentLoaded", function(event) { 
+    foodsDesc = fetchFoodDesc(foods);
+    foodsDesc = dedupArray(foodsDesc);
+    foodToConvertSelected();
+    // populate conversion to units list
+    populateToChoices();
+});
+
 
 // Conversion
 
@@ -224,7 +232,7 @@ function calculateClick() {
         var resultValue = getConversionResult(valueFrom,
             valueTo,
             conversionUnit);
-        var preText = "It weights";
+        var preText = "The food weights";
         var selectElement = document.getElementById("convertToList");
 
         var ConvertToText = selectElement.options[selectElement.selectedIndex].text;
