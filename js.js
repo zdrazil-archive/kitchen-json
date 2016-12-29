@@ -178,9 +178,9 @@ foodToConvertSelected();
 
 // Conversion to units and their values
 var conversions = {
-    "kilograms": 0.001,
-    "miligrams": 1000,
     "grams": 1,
+    "miligrams": 1000,
+    "kilograms": 0.001,
     "ounce": 0.035274,
     "pounds": 0.0022046
 };
